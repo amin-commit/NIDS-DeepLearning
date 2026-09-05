@@ -1,0 +1,69 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background: #1a1a2e;
+    color: #eee;
+    padding: 20px;
+}
+h1 {
+    color: #e94560;
+}
+.counters {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+.counter-box {
+    background: #16213e;
+    border: 1px solid #0f3460;
+    border-radius: 8px;
+    padding: 10px 20px;
+    text-align: center;
+    min-width: 100px;
+}
+.counter-box.attack {
+    border-color: #e94560;
+}
+.counter-box span {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+}
+.counter-box p {
+    margin: 0;
+    font-size: 12px;
+    color: #aaa;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th {
+    background: #0f3460;
+    padding: 10px;
+    text-align: left;
+}
+td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #0f3460;
+}
+tr.benign {
+    background: #1a3a2e;
+}
+tr.attack {
+    background: #3a1a1a;
+}
+tr.benign td:nth-child(4) {
+    color: #4caf50;
+    font-weight: bold;
+}
+tr.attack td:nth-child(4) {
+    color: #e94560;
+    font-weight: bold;
+}
+.status {
+    margin-bottom: 15px;
+    color: #aaa;
+    font-size: 13px;
+}

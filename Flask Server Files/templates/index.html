@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NIDS Monitor</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <h1>NIDS Monitor</h1>
+    <div class="status" id="status">Waiting for flows...</div>
+    <div class="counters" id="counters"></div>
+ 
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Src IP</th>
+                <th>Dst IP</th>
+                <th>Prediction</th>
+                <th>Confidence</th>
+            </tr>
+        </thead>
+        <tbody id="flow-table"></tbody>
+    </table>
+ 
+    <script>
+        const counts = {}; //tracks predictions
+        const allFlows = []; //array for all flows so far
+ 
+        function updateCounters() {
+            const container = document.getElementById('counters'); //gets the div counters
+            container.innerHTML = ''; //clears it 
+            for (const [label, count] of Object.entries(counts)) { //iterate over each label count pair in counts
+                const box = document.createElement('div'); //creates the div
+                box.className = 'counter-box' + (label !== 'Benign' ? ' attack' : ''); //assigns counter-box or counter-box attack
+                box.innerHTML = `<span>${count}</span><p>${label}</p>`; //inserts the count and the label for the attacks
+                container.appendChild(box); //appends to container
+            }
+        }
+ 
+        async function fetchFlows() { //async to wait for network data, non blocking, can do other stuff whilst waiting.
+            const res = await fetch('/get_flows'); //waits for response at get flows
+            const data = await res.json();
+ 
+            //only process flows that aren't seen yet
+            const newFlows = data.flows.slice(allFlows.length);
+ 
+            if (newFlows.length === 0) return; 
+            
+            //update with current time and amount of flows total.
+            document.getElementById('status').textContent = `Last updated: ${new Date().toLocaleTimeString()} — ${data.flows.length} total flows`;
+ 
+            const tbody = document.getElementById('flow-table'); //where the rows are inserted
+ 
+            newFlows.forEach(flow => { //for each new flow
+                counts[flow.prediction] = (counts[flow.prediction] || 0) + 1; //increment counter
+ 
+                const tr = document.createElement('tr'); //creates new entry 
+                tr.className = flow.prediction === 'Benign' ? 'benign' : 'attack'; //adds class for the css style
+                tr.innerHTML = `   
+                    <td>${flow.time}</td>
+                    <td>${flow.src_ip}</td>
+                    <td>${flow.dst_ip}</td>
+                    <td>${flow.prediction}</td>
+                    <td>${flow.confidence}%</td>
+                `;
+                tbody.insertBefore(tr, tbody.firstChild); //insert at top
+ 
+                allFlows.push(flow); //append it to mark as processed/complete
+            });
+ 
+            //keep table to last 10000 rows
+            while (tbody.rows.length > 10000) {
+                tbody.deleteRow(tbody.rows.length - 1);
+            }
+ 
+            updateCounters();
+        }
+ 
+        //fetch every 3 seconds
+        fetchFlows();
+        setInterval(fetchFlows, 3000); //ms
+    </script>
+</body>
+</html>

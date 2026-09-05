@@ -1,0 +1,11 @@
+fastparquet
+nfstream
+Flask
+numpy
+joblib
+pandas
+tensorflow
+keras
+scikit-learn
+matplotlib
+seaborn

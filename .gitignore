@@ -1,0 +1,11 @@
+# Python virtual environments
+venv/
+.venv/
+env/
+
+# Jupyter files
+.ipynb_checkpoints/
+
+# Secrets and local configuration
+.env
+.env.*
